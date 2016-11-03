@@ -20,6 +20,12 @@ logger = logging.getLogger('alembic.env')
 from flask import current_app
 
 from shop.database import Base
+from shop.models import (
+    Product,
+    Order,
+    OrderProduct,
+)
+
 
 config.set_main_option('sqlalchemy.url',
                        current_app.config.get('SQLALCHEMY_DATABASE_URI'))
