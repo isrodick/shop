@@ -9,12 +9,12 @@ from shop import app
 
 db = SQLAlchemy(app)
 engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'], convert_unicode=True)
-db_session = scoped_session(sessionmaker(autocommit=False,
+DBSession = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind=engine))
 Base = declarative_base()
-Base.query = db_session.query_property()
+Base.query = DBSession.query_property()
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
-    db_session.remove()
+    DBSession.remove()
