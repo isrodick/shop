@@ -17,7 +17,7 @@ from shop.models import (
 )
 
 
-@app.route('/product/new', method=['GET', 'POST'])
+@app.route('/product/new', methods=['GET', 'POST'])
 def product_new():
 	if request.method == 'POST':
 		product = Product()
@@ -38,7 +38,7 @@ def product_new():
 	return render_template('product_new.html')
 
 
-@app.route('/product/<int:id>/edit', method=['GET', 'POST'])
+@app.route('/product/<int:id>/edit', methods=['GET', 'POST'])
 def product_edit(id):
 	product = DBSession.query(Product).get(id)
 
@@ -63,7 +63,7 @@ def product_edit(id):
 	return render_template('product_edit.html', product=product)
 
 
-@app.route('/product/<int:id>/delete', method=['POST'])
+@app.route('/product/<int:id>/delete', methods=['POST'])
 def product_delete(id):
 	product = DBSession.query(Product).get(id)
 
