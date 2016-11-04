@@ -17,6 +17,13 @@ from shop.models import (
 )
 
 
+@app.route('/admin/product/list')
+def admin_product_list():
+    products = DBSession.query(Product).order_by(Product.title.asc())
+
+    return render_template('admin_product_list.html', products=products)
+
+
 @app.route('/product/new', methods=['GET', 'POST'])
 def product_new():
 	if request.method == 'POST':
