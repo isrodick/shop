@@ -36,7 +36,7 @@ def product_new():
 	return render_template('product_new.html')
 
 
-@app.route('/product/<int:id>', method=['GET', 'POST'])
+@app.route('/product/<int:id>/edit', method=['GET', 'POST'])
 def product_edit(id):
 	product = DBSession.query(Product).get(id)
 
