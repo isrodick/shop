@@ -5,14 +5,22 @@ from sqlalchemy import (
 	Integer,
 	Numeric,
 	Unicode,
+	Enum,
 )
 from sqlalchemy.orm import relation
+
+import enum
 
 from shop.database import Base
 
 
 def check_qty_positive(tablename):
 	return CheckConstraint('qty >= 0', name='{}_check_qty_positive'.format(tablename))
+
+
+class OrderStatus(enum.Enum):
+	new = 'New'
+	payed = 'Payed'
 
 
 class Product(Base):
@@ -32,7 +40,7 @@ class Order(Base):
 	__tablename__ = 'order'
 
 	id = Column(Integer, primary_key=True)
-	status = Column(Integer, nullable=False)
+	status = Column(Enum(OrderStatus), nullable=False)
 
 	products = relation('OrderProduct', backref='order', lazy='subquery', cascade='all, delete-orphan')
 
