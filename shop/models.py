@@ -22,7 +22,7 @@ class Product(Base):
 	)
 
 	id = Column(Integer, primary_key=True)
-	title = Column(Unicode(255), nullable=False)
+	title = Column(Unicode(255), nullable=False, unique=True)
 	price = Column(Numeric(precision=12, scale=4), nullable=False)
 	image_url = Column(Unicode(255))
 	qty = Column(Integer, nullable=False)
