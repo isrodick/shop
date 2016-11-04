@@ -24,8 +24,8 @@ def admin_product_list():
     return render_template('admin_product_list.html', products=products)
 
 
-@app.route('/product/new', methods=['GET', 'POST'])
-def product_new():
+@app.route('/admin/product/new', methods=['GET', 'POST'])
+def admin_product_new():
 	if request.method == 'POST':
 		product = Product()
 
@@ -45,8 +45,8 @@ def product_new():
 	return render_template('product_new.html')
 
 
-@app.route('/product/<int:id>/edit', methods=['GET', 'POST'])
-def product_edit(id):
+@app.route('/admin/product/<int:id>/edit', methods=['GET', 'POST'])
+def admin_product_edit(id):
 	product = DBSession.query(Product).get(id)
 
 	if not product:
@@ -70,8 +70,8 @@ def product_edit(id):
 	return render_template('product_edit.html', product=product)
 
 
-@app.route('/product/<int:id>/delete', methods=['POST'])
-def product_delete(id):
+@app.route('/admin/product/<int:id>/delete', methods=['POST'])
+def admin_product_delete(id):
 	product = DBSession.query(Product).get(id)
 
 	if not product:
