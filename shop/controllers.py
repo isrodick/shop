@@ -36,6 +36,31 @@ def product_new():
 	return render_template('product_new.html')
 
 
+@app.route('/product/<int:id>', method=['GET', 'POST'])
+def product_edit(id):
+	product = DBSession.query(Product).get(id)
+
+	if not product:
+		flash('Product not found')
+
+		return redirect(url_for('product_list'))
+
+	if request.method == 'POST':
+		product.title = request.form['title']
+		product.prie = request.form['prie']
+		product.image_url = request.form['image_url']
+		product.qty = request.form['qty']
+
+		DBSession.add(product)
+		DBSession.commit()
+
+		flash('Product was updated successfully')
+
+		return redirect(url_for('product_list'))
+
+	return render_template('product_edit.html', product=product)
+
+
 @app.route('/')
 def product_list():
     products = DBSession.query(Product).order_by(Product.title.asc())
