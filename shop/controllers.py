@@ -6,6 +6,8 @@ from flask import (
     flash,
 )
 
+from sqlalchemy.exc import SQLAlchemyError
+
 from shop import app
 from shop.database import DBSession
 from shop.models import (
@@ -59,6 +61,33 @@ def product_edit(id):
 		return redirect(url_for('product_list'))
 
 	return render_template('product_edit.html', product=product)
+
+
+@app.route('/product/<int:id>/delete', method=['POST'])
+def product_delete(id):
+	product = DBSession.query(Product).get(id)
+
+	if not product:
+		flash('Product not found')
+
+		return redirect(url_for('product_list'))
+
+	if request.method != 'POST':
+		return redirect(url_for('product_list'))
+
+	try:
+		DBSession.delete(product)
+		DBSession.flush()
+		DBSession.commit()
+	except SQLAlchemyError as e:
+		print(e)
+		flash('Product could not be deleted')
+
+		return redirect(url_for('product_edit', id=product.id))
+
+	flash('Product was deleted successfully')
+
+	return redirect(url_for('product_list'))
 
 
 @app.route('/')
