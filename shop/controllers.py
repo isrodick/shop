@@ -90,6 +90,8 @@ def admin_product_delete(id):
 		print(e)
 		flash('Product could not be deleted')
 
+		DBSession.rollback()
+
 		return redirect(url_for('product_edit', id=product.id))
 
 	flash('Product was deleted successfully')
