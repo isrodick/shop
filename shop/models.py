@@ -11,14 +11,14 @@ from sqlalchemy.orm import relation
 from shop.database import Base
 
 
-def check_qty_positive():
-	return CheckConstraint('qty >= 0', name='check_qty_positive')
+def check_qty_positive(tablename):
+	return CheckConstraint('qty >= 0', name='{}_check_qty_positive'.format(tablename))
 
 
 class Product(Base):
 	__tablename__ = 'product'
 	__table_args__ = (
-		check_qty_positive(),
+		check_qty_positive(__tablename__),
 	)
 
 	id = Column(Integer, primary_key=True)
@@ -40,7 +40,7 @@ class Order(Base):
 class OrderProduct(Base):
 	__tablename__ = 'order_product'
 	__table_args__ = (
-		check_qty_positive(),
+		check_qty_positive(__tablename__),
 	)
 
 	order_id = Column(Integer, ForeignKey('order.id', onupdate='CASCADE', ondelete='CASCADE'), index=True, primary_key=True)
