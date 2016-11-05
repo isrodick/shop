@@ -22,7 +22,8 @@ from shop.models import (
     PaymentMethod,
 )
 from shop.forms import (
-	ProductForm,
+	ProductNewForm,
+	ProductEditForm,
 	OrderPayForm,
 )
 
@@ -36,7 +37,7 @@ def admin_product_list():
 
 @app.route('/admin/product/new', methods=['GET', 'POST'])
 def admin_product_new():
-	form = ProductForm(request.form)
+	form = ProductNewForm(request.form)
 
 	if request.method == 'POST' and form.validate():
 		product = Product()
@@ -67,7 +68,7 @@ def admin_product_edit(id):
 
 		return redirect(url_for('admin_product_list'))
 
-	form = ProductForm(request.form, product)
+	form = ProductEditForm(request.form, product)
 
 	if request.method == 'POST' and form.validate():
 		form.populate_obj(products)
