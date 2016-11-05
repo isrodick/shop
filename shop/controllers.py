@@ -36,7 +36,7 @@ def admin_product_list():
 
 @app.route('/admin/product/new', methods=['GET', 'POST'])
 def admin_product_new():
-	form = ProductForm(request.POST)
+	form = ProductForm(request.form)
 
 	if request.method == 'POST' and form.validate():
 		product = Product()
@@ -67,7 +67,7 @@ def admin_product_edit(id):
 
 		return redirect(url_for('admin_product_list'))
 
-	form = ProductForm(request.POST, product)
+	form = ProductForm(request.form, product)
 
 	if request.method == 'POST' and form.validate():
 		form.populate_obj(products)
@@ -128,7 +128,7 @@ def basket():
 
 		return redirect(url_for('product_list'))
 
-	form = OrderPayForm(request.POST, order)
+	form = OrderPayForm(request.form, order)
 
 	if request.method == 'POST' and form.validate():
 		form.populate_obj(order)
