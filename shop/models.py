@@ -42,7 +42,7 @@ class Order(Base):
 	id = Column(Integer, primary_key=True)
 	status = Column(Enum(OrderStatus), nullable=False)
 
-	products = relation('OrderProduct', backref='order', lazy='subquery', cascade='all, delete-orphan')
+	links = relation('OrderProduct', backref='order', lazy='subquery', cascade='all, delete-orphan')
 
 
 class OrderProduct(Base):
