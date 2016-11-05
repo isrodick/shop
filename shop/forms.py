@@ -11,8 +11,14 @@ from wtforms import (
 from shop.models import PaymentMethod
 
 
+def submit(title):
+	def metaclass(name, parents, attributes):
+		attributes['submit'] = SubmitField(title, [validators.InputRequired()])
+		return type(name, parents, attributes)
+	return metaclass
+
+
 class ProductForm(Form):
-	submit = SubmitField('Save', [validators.InputRequired()])
 	title = StringField('Title', [validators.InputRequired()])
 	price = DecimalField('Price', [validators.InputRequired()])
 	image_url = StringField('Image URL')
@@ -20,6 +26,14 @@ class ProductForm(Form):
 		validators.InputRequired(),
 		validators.NumberRange(min=0),
 	])
+
+
+class ProductNewForm(ProductForm, metaclass=submit('Create')):
+	pass
+
+
+class ProductEditForm(ProductForm, metaclass=submit('Save')):
+	pass
 
 
 class OrderPayForm(Form):
