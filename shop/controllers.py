@@ -3,8 +3,10 @@ from flask import (
 	session,
 	redirect,
 	url_for,
+	abort,
     render_template,
     flash,
+    jsonify,
 )
 
 from sqlalchemy.exc import SQLAlchemyError
@@ -15,6 +17,7 @@ from shop.models import (
     Product,
     Order,
     OrderProduct,
+    OrderStatus,
     PAYMENT_METHODS,
 )
 
@@ -116,3 +119,49 @@ def basket():
 		order = DBSession.query(Order).get(session['order_id'])
 
 	return render_template('basket.html', order=order, payment_methods=PAYMENT_METHODS)
+
+
+@app.route('/order/product/<int:product_id>/add')
+def order_product_add(product_id):
+	order = None
+
+	if 'order_id' in session:
+		order = DBSession.query(Order).get(session['order_id'])
+	else:
+		order = Order()
+		order.status = OrderStatus.new
+
+		try:
+			DBSession.add(order)
+			DBSession.flush()
+		except SQLAlchemyError as e:
+			print(e)
+
+			DBSession.rollback()
+
+			abort(400)	## temporarily
+
+		session['order_id'] = order.id
+
+	product = DBSession.query(Product).get(product_id)
+
+	if not product:
+		abort(404)	## temporarily
+
+	order_product = OrderProduct()
+	order_product.order_id = order.id
+	order_product.product_id = product.id
+	order_product.qty = 1
+
+	try:
+		DBSession.add(order_product)
+		DBSession.flush()
+		DBSession.commit()
+	except SQLAlchemyError as e:
+		print(e)
+
+		DBSession.rollback()
+
+		abort(400) ## temporarily
+
+	return "OK"	## temporarily
