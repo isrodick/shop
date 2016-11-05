@@ -1,5 +1,6 @@
 from flask import (
 	request,
+	session,
 	redirect,
 	url_for,
     render_template,
@@ -104,3 +105,13 @@ def product_list():
     products = DBSession.query(Product).order_by(Product.title.asc())
 
     return render_template('product_list.html', products=products)
+
+
+@app.route('/basket')
+def basket():
+	order = None
+
+	if 'order_id' in session:
+		order = DBSession.query(Order).get(session['order_id'])
+
+	return render_template('basket.html', order=order)
