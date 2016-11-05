@@ -252,6 +252,53 @@ def order_product_delete(product_id):
 	)
 
 
+@app.route('/admin/order/list')
+def admin_order_list():
+	orders = DBSession.query(Order)\
+		.order_by(
+			(Order.status == OrderStatus.paid.name).desc(),
+		)
+
+    return render_template('admin_order_list.html', products=orders)
+
+
+@app.route('/admin/order/<int:id>/view')
+def admin_order_view():
+	order = DBSession.query(Order).get(id)
+
+	if not order:
+		flash('Order not found')
+
+		return redirect(url_for('admin_order_list'))
+
+	return render_template('admin_order_view.html', order=order)
+
+
+@app.route('/admin/order/<int:id>/delete', methods=['POST'])
+def admin_order_delete(id):
+	order = DBSession.query(Order).get(id)
+
+	if not order:
+		flash('Order not found')
+
+		return redirect(url_for('admin_order_list'))
+
+	try:
+		DBSession.delete(order)
+		DBSession.commit()
+	except SQLAlchemyError as e:
+		print(e)
+		flash('Order could not be deleted')
+
+		DBSession.rollback()
+
+		return redirect(url_for('admin_order_view', id=order.id))
+
+	flash('Order was deleted successfully')
+
+	return redirect(url_for('admin_order_list'))
+
+
 @app.route('/order/list')
 def order_list():
 	orders = DBSession.query(Order)\
@@ -307,28 +354,3 @@ def order_pay():
 	session.pop('order_id', None)
 
 	return redirect(url_for('order_view', id=order.id))
-
-
-@app.route('/order/<int:id>/delete', methods=['POST'])
-def order_delete(id):
-	order = DBSession.query(Order).get(id)
-
-	if not order:
-		flash('Order not found')
-
-		return redirect(url_for('order_list'))
-
-	try:
-		DBSession.delete(order)
-		DBSession.commit()
-	except SQLAlchemyError as e:
-		print(e)
-		flash('Order could not be deleted')
-
-		DBSession.rollback()
-
-		return redirect(url_for('order_view', id=order.id))
-
-	flash('Order was deleted successfully')
-
-	return redirect(url_for('order_list'))
