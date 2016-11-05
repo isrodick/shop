@@ -1,0 +1,27 @@
+{% macro render_field(field) %}
+    <div class="form-group {{ 'has-error' if field.errors else '' }}">
+        {{ field.label(class='col-sm-2 control-label') }}
+        <div class="col-sm-10">
+            {{ field(class='form-control')|safe }}
+
+        {% if field.errors %}
+            <ul class="errors">
+            {% for error in field.errors %}
+                <li class="error">{{ error }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+        </div>
+    </div>
+{% endmacro %}
+
+
+{% macro render_form(form, action_url, method='post') %}
+    <form class="form-horizontal" method="{{ method }}" action="{{ action_url }}">
+        {{ caller() }}
+
+    {% if 'submit' in form %}
+        {{ form.submit(class="btn btn btn-success pull-right")|safe }}
+    {% endif %}
+    </form>
+{% endmacro %}
