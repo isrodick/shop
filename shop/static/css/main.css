@@ -1,3 +1,11 @@
 .container-fluid .panel.product-item {
 	margin-top: 15px;
 }
+
+.form-group.has-error ul.errors {
+	list-style-type: none;
+}
+
+.form-group.has-error .errors li {
+	color: #a94442;
+}
