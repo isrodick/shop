@@ -1,3 +1,5 @@
+from flask import session
+
 from sqlalchemy import (
 	CheckConstraint,
 	ForeignKey,
@@ -12,7 +14,10 @@ from sqlalchemy.orm.collections import attribute_mapped_collection
 
 import enum
 
-from shop.database import Base
+from shop.database import (
+	Base,
+	DBSession,
+)
 
 
 def check_qty_positive(tablename):
@@ -61,6 +66,30 @@ class Order(Base):
 
 	product_items = relation('OrderProduct', order_by='OrderProduct.product_id.asc()', cascade='all, delete-orphan', collection_class=attribute_mapped_collection('product_id'))
 	links = relation('OrderProduct', backref='order', lazy='subquery', cascade='all, delete-orphan')
+
+	@classmethod
+	def get_from_session(cls, create=False):
+		order = None
+
+		if 'order_id' in session:
+			order = DBSession.query(Order).get(session['order_id'])
+		elif create:
+			order = Order()
+			order.status = OrderStatus.new
+
+			try:
+				DBSession.add(order)
+				DBSession.flush()
+			except SQLAlchemyError as e:
+				print(e)
+
+				DBSession.rollback()
+
+				abort(400)	## temporarily
+
+			session['order_id'] = order.id
+
+		return order
 
 
 class OrderProduct(Base):
