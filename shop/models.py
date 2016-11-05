@@ -8,6 +8,7 @@ from sqlalchemy import (
 	Enum,
 )
 from sqlalchemy.orm import relation
+from sqlalchemy.orm.collections import attribute_mapped_collection
 
 import enum
 
@@ -49,6 +50,7 @@ class Order(Base):
 	id = Column(Integer, primary_key=True)
 	status = Column(Enum(OrderStatus), nullable=False)
 
+	product_items = relation('OrderProduct', order_by='OrderProduct.product_id.asc()', cascade='all, delete-orphan', collection_class=attribute_mapped_collection('product_id'))
 	links = relation('OrderProduct', backref='order', lazy='subquery', cascade='all, delete-orphan')
 
 
