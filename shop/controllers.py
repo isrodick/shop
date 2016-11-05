@@ -164,4 +164,6 @@ def order_product_add(product_id):
 
 		abort(400) ## temporarily
 
-	return "OK"	## temporarily
+	return jsonify(
+		total_products_qty=sum(link.qty for link in order.links),
+	)
