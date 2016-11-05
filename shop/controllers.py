@@ -148,6 +148,9 @@ def order_product_add(product_id):
 	if not product:
 		abort(404)	## temporarily
 
+	if product.qty < 1:
+		abort(400)	## temporarily
+
 	order_product = OrderProduct()
 	order_product.order_id = order.id
 	order_product.product_id = product.id
