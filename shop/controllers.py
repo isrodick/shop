@@ -18,7 +18,7 @@ from shop.models import (
     Order,
     OrderProduct,
     OrderStatus,
-    PAYMENT_METHODS,
+    PaymentMethod,
 )
 
 
@@ -118,7 +118,7 @@ def basket():
 	if 'order_id' in session:
 		order = DBSession.query(Order).get(session['order_id'])
 
-	return render_template('basket.html', order=order, payment_methods=PAYMENT_METHODS)
+	return render_template('basket.html', order=order, payment_methods=PaymentMethod)
 
 
 @app.route('/order/product/<int:product_id>/add')
@@ -262,7 +262,7 @@ def order_pay():
 	if not order:
 		abort(404)
 
-	if request.form['payment_method'] not in PAYMENT_METHODS:
+	if request.form['payment_method'] not in PaymentMethod._member_names_:
 		flash('Invalid payment method')
 
 		return redirect(url_for('basket'))
