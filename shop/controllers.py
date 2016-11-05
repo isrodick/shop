@@ -21,6 +21,10 @@ from shop.models import (
     OrderStatus,
     PaymentMethod,
 )
+from shop.forms import (
+	ProductForm,
+	OrderPayForm,
+)
 
 
 @app.route('/admin/product/list')
@@ -32,13 +36,15 @@ def admin_product_list():
 
 @app.route('/admin/product/new', methods=['GET', 'POST'])
 def admin_product_new():
-	if request.method == 'POST':
+	form = ProductForm(request.POST)
+
+	if request.method == 'POST' and form.validate():
 		product = Product()
 
-		product.title = request.form['title']
-		product.prie = request.form['prie']
-		product.image_url = request.form['image_url']
-		product.qty = request.form['qty']
+		product.title = form.title.data
+		product.prie = form.prie.data
+		product.image_url = form.image_url.data
+		product.qty = form.qty.data
 
 		DBSession.add(product)
 		DBSession.commit()
@@ -46,8 +52,10 @@ def admin_product_new():
 		flash('Product was created successfully')
 
 		return redirect(url_for('admin_product_edit', id=product.id))
+	elif request.method == 'POST':
+		flash('Validation error. Please enter the correct data')
 
-	return render_template('admin_product_new.html')
+	return render_template('admin_product_new.html', form=form)
 
 
 @app.route('/admin/product/<int:id>/edit', methods=['GET', 'POST'])
@@ -59,11 +67,10 @@ def admin_product_edit(id):
 
 		return redirect(url_for('admin_product_list'))
 
-	if request.method == 'POST':
-		product.title = request.form['title']
-		product.prie = request.form['prie']
-		product.image_url = request.form['image_url']
-		product.qty = request.form['qty']
+	form = ProductForm(request.POST, product)
+
+	if request.method == 'POST' and form.validate():
+		form.populate_obj(products)
 
 		DBSession.add(product)
 		DBSession.commit()
@@ -71,8 +78,10 @@ def admin_product_edit(id):
 		flash('Product was updated successfully')
 
 		return redirect(url_for('admin_product_list'))
+	elif request.method == 'POST':
+		flash('Validation error. Please enter the correct data')
 
-	return render_template('admin_product_edit.html', product=product)
+	return render_template('admin_product_edit.html', form=form)
 
 
 @app.route('/admin/product/<int:id>/delete', methods=['POST'])
@@ -107,9 +116,33 @@ def product_list():
     return render_template('product_list.html', products=products)
 
 
-@app.route('/basket')
+@app.route('/basket', methods=['GET', 'POST'])
 def basket():
-	return render_template('basket.html', order=Order.get_from_session(), payment_methods=PaymentMethod)
+	order = Order.get_from_session()
+
+	if not order:
+		flash('Order not found')
+
+		return redirect(url_for('product_list'))
+
+	form = OrderPayForm(request.POST, order)
+
+	if request.method == 'POST' and form.validate():
+		form.populate_obj(order)
+		order.status = OrderStatus.paid
+
+		DBSession.add(order)
+		DBSession.commit()
+
+		session.pop('order_id', None)
+
+		flash('Order paid successfully')
+
+		return redirect(url_for('task_list'))
+	elif request.method == 'POST':
+		flash('Validation error. Please enter the correct data')
+
+	return render_template('basket.html', form=form, payment_methods=PaymentMethod)
 
 
 @app.route('/order/product/<int:product_id>/add')
@@ -132,15 +165,8 @@ def order_product_add(product_id):
 	order_product.product_id = product.id
 	order_product.qty = 1
 
-	try:
-		DBSession.add(order_product)
-		DBSession.commit()
-	except SQLAlchemyError as e:
-		print(e)
-
-		DBSession.rollback()
-
-		abort(400) ## temporarily
+	DBSession.add(order_product)
+	DBSession.commit()
 
 	return jsonify(
 		total_products_qty=sum(link.qty for link in order.links),
@@ -279,35 +305,3 @@ def order_view():
 		return redirect(url_for('order_list'))
 
 	return render_template('order_view.html', order=order)
-
-
-@app.route('/order/pay', methods=['POST'])
-def order_pay():
-	order = Order.get_from_session()
-
-	if not order:
-		abort(404)
-
-	if request.form['payment_method'] not in PaymentMethod._member_names_:
-		flash('Invalid payment method')
-
-		return redirect(url_for('basket'))
-
-	order.status = OrderStatus.paid
-	order.payment_method = request.form['payment_method']
-
-	try:
-		DBSession.add(order)
-		DBSession.commit()
-	except SQLAlchemyError as e:
-		print(e)
-
-		DBSession.rollback()
-
-		flash('Error during order payment')
-
-		return redirect(url_for('basket'))
-
-	session.pop('order_id', None)
-
-	return redirect(url_for('order_view', id=order.id))
