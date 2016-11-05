@@ -28,7 +28,7 @@ def check_qty_positive(tablename):
 
 class OrderStatus(enum.Enum):
 	new = 'New'
-	payed = 'Payed'
+	paid = 'Paid'
 
 
 class Product(Base):
