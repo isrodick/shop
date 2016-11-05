@@ -15,13 +15,6 @@ import enum
 from shop.database import Base
 
 
-PAYMENT_METHODS = {
-	'liqpay': 'LiqPay',
-	'privat24': 'Privat24',
-	'paypal': 'PayPal',
-}
-
-
 def check_qty_positive(tablename):
 	return CheckConstraint('qty >= 0', name='{}_check_qty_positive'.format(tablename))
 
@@ -29,6 +22,12 @@ def check_qty_positive(tablename):
 class OrderStatus(enum.Enum):
 	new = 'New'
 	paid = 'Paid'
+
+
+class PaymentMethod(enum.Enum):
+	liqpay = 'LiqPay'
+	privat24 = 'Privat24'
+	paypal = 'PayPal'
 
 
 class Product(Base):
@@ -46,9 +45,19 @@ class Product(Base):
 
 class Order(Base):
 	__tablename__ = 'order'
+	__table_args__ = (
+		CheckConstraint(
+			'(status = \'{paid}\' AND payment_method IS NOT NULL) OR (status = \'{new}\' AND payment_method IS NULL)'.format(
+				paid=OrderStatus.paid.name,
+				new=OrderStatus.new.name
+			),
+			name='{}_payment_method_contstraint'.format(__tablename__),
+		),
+	)
 
 	id = Column(Integer, primary_key=True)
 	status = Column(Enum(OrderStatus), nullable=False)
+	payment_method = Column(Enum(PaymentMethod))
 
 	product_items = relation('OrderProduct', order_by='OrderProduct.product_id.asc()', cascade='all, delete-orphan', collection_class=attribute_mapped_collection('product_id'))
 	links = relation('OrderProduct', backref='order', lazy='subquery', cascade='all, delete-orphan')
