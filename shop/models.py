@@ -1,4 +1,7 @@
-from flask import session
+from flask import (
+	session,
+	url_for,
+)
 
 from sqlalchemy import (
 	CheckConstraint,
