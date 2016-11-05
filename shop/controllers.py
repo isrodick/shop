@@ -307,3 +307,28 @@ def order_pay():
 	session.pop('order_id', None)
 
 	return redirect(url_for('order_view', id=order.id))
+
+
+@app.route('/order/<int:id>/delete', methods=['POST'])
+def order_delete(id):
+	order = DBSession.query(Order).get(id)
+
+	if not order:
+		flash('Order not found')
+
+		return redirect(url_for('order_list'))
+
+	try:
+		DBSession.delete(order)
+		DBSession.commit()
+	except SQLAlchemyError as e:
+		print(e)
+		flash('Order could not be deleted')
+
+		DBSession.rollback()
+
+		return redirect(url_for('order_view', id=order.id))
+
+	flash('Order was deleted successfully')
+
+	return redirect(url_for('order_list'))
