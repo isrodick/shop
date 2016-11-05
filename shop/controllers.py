@@ -252,6 +252,16 @@ def order_product_delete(product_id):
 	)
 
 
+@app.route('/order/list')
+def order_list():
+	orders = DBSession.query(Order)\
+		.order_by(
+			(Order.status == OrderStatus.paid.name).desc(),
+		)
+
+    return render_template('order_list.html', products=orders)
+
+
 @app.route('/order/<int:id>/view')
 def order_view():
 	order = DBSession.query(Order).get(id)
