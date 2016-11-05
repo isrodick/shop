@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block body %}
+    <a href="{{ url_for('admin_product_new') }}" class="btn btn-success" role="button">New Product</a>
+
+    {% for product in products %}
+        <div class="panel panel-default product-item">
+            <div class="panel-heading">
+                <a href="{{ url_for('admin_product_edit', id=product.id) }}" class="btn btn-default" role="button">Edit</a>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
+                        <a href="#" class="thumbnail">
+                            <img src="{{ product.get_img_url() }}">
+                        </a>
+                    </div>
+                    <div class="col-lg-9 col-md-9 col-sm-9 col-xs-6">
+                    {% if not product.in_stock() %}
+                        <p>
+                            <span class="label label-warning">Product not in stock</span>
+                        </p>
+                    {% endif %}
+                        <h4>
+                            <b>{{ product.title }}</b>
+                        </h4>
+                        <p>
+                            <b>Price:</b> {{ product.price }}$
+                        </p>
+                    {% if product.in_stock() %}
+                        <p>
+                            <b>QTY:</b> {{ product.qty }}
+                        </p>
+                    {% else %}
+                        <span class="label label-warning">Product not in stock</span>
+                    {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}
