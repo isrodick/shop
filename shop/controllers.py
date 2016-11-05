@@ -170,3 +170,47 @@ def order_product_add(product_id):
 	return jsonify(
 		total_products_qty=sum(link.qty for link in order.links),
 	)
+
+
+@app.route('/order/product/<int:product_id>/qty', methods=['POST'])
+def order_product_qty(product_id):
+	order = None
+
+	if 'order_id' in session:
+		order = DBSession.query(Order).get(session['order_id'])
+
+	if not order:
+		abort(404)
+
+	product = DBSession.query(Product).get(product_id)
+
+	if not product:
+		abort(404)	## temporarily
+
+	if product.qty < request.form['qty']:
+		abort(400)	## temporarily
+
+	order_product = order.product_items.get(product_id)
+
+	if not order_product:
+		abort(404)	## temporarily
+
+	order_product.qty = request.form['qty']
+
+	try:
+		DBSession.add(order_product)
+		DBSession.commit()
+	except SQLAlchemyError as e:
+		print(e)
+
+		DBSession.rollback()
+
+		abort(400)	## temporarily
+
+	return jsonify(
+		product={
+			'id': order_product.product_id,
+			'qty': order_product.qty,
+		},
+		total_price=sum(link.qty * link.product.price for link in order.links),
+	)
