@@ -10,6 +10,7 @@ from flask import (
 )
 
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm.exc import FlushError
 
 from shop import app
 from shop.database import DBSession
@@ -40,14 +41,13 @@ def admin_product_new():
 		product.qty = request.form['qty']
 
 		DBSession.add(product)
-		DBSession.flush()
 		DBSession.commit()
 
 		flash('Product was created successfully')
 
-		return redirect(url_for('product_edit', id=product.id))
+		return redirect(url_for('admin_product_edit', id=product.id))
 
-	return render_template('product_new.html')
+	return render_template('admin_product_new.html')
 
 
 @app.route('/admin/product/<int:id>/edit', methods=['GET', 'POST'])
@@ -57,7 +57,7 @@ def admin_product_edit(id):
 	if not product:
 		flash('Product not found')
 
-		return redirect(url_for('product_list'))
+		return redirect(url_for('admin_product_list'))
 
 	if request.method == 'POST':
 		product.title = request.form['title']
@@ -70,9 +70,9 @@ def admin_product_edit(id):
 
 		flash('Product was updated successfully')
 
-		return redirect(url_for('product_list'))
+		return redirect(url_for('admin_product_list'))
 
-	return render_template('product_edit.html', product=product)
+	return render_template('admin_product_edit.html', product=product)
 
 
 @app.route('/admin/product/<int:id>/delete', methods=['POST'])
@@ -82,14 +82,10 @@ def admin_product_delete(id):
 	if not product:
 		flash('Product not found')
 
-		return redirect(url_for('product_list'))
-
-	if request.method != 'POST':
-		return redirect(url_for('product_list'))
+		return redirect(url_for('admin_product_list'))
 
 	try:
 		DBSession.delete(product)
-		DBSession.flush()
 		DBSession.commit()
 	except SQLAlchemyError as e:
 		print(e)
@@ -97,11 +93,11 @@ def admin_product_delete(id):
 
 		DBSession.rollback()
 
-		return redirect(url_for('product_edit', id=product.id))
+		return redirect(url_for('admin_product_edit', id=product.id))
 
 	flash('Product was deleted successfully')
 
-	return redirect(url_for('product_list'))
+	return redirect(url_for('admin_product_list'))
 
 
 @app.route('/')
@@ -113,36 +109,11 @@ def product_list():
 
 @app.route('/basket')
 def basket():
-	order = None
-
-	if 'order_id' in session:
-		order = DBSession.query(Order).get(session['order_id'])
-
-	return render_template('basket.html', order=order, payment_methods=PaymentMethod)
+	return render_template('basket.html', order=Order.get_from_session(), payment_methods=PaymentMethod)
 
 
 @app.route('/order/product/<int:product_id>/add')
 def order_product_add(product_id):
-	order = None
-
-	if 'order_id' in session:
-		order = DBSession.query(Order).get(session['order_id'])
-	else:
-		order = Order()
-		order.status = OrderStatus.new
-
-		try:
-			DBSession.add(order)
-			DBSession.flush()
-		except SQLAlchemyError as e:
-			print(e)
-
-			DBSession.rollback()
-
-			abort(400)	## temporarily
-
-		session['order_id'] = order.id
-
 	product = DBSession.query(Product).get(product_id)
 
 	if not product:
@@ -151,6 +122,11 @@ def order_product_add(product_id):
 	if product.qty < 1:
 		abort(400)	## temporarily
 
+	try:
+		order = Order.get_from_session(create=True)
+	except FlushError as e:
+		abort(400)
+
 	order_product = OrderProduct()
 	order_product.order_id = order.id
 	order_product.product_id = product.id
@@ -158,7 +134,6 @@ def order_product_add(product_id):
 
 	try:
 		DBSession.add(order_product)
-		DBSession.flush()
 		DBSession.commit()
 	except SQLAlchemyError as e:
 		print(e)
@@ -174,31 +149,22 @@ def order_product_add(product_id):
 
 @app.route('/order/product/<int:product_id>/qty', methods=['POST'])
 def order_product_qty(product_id):
-	order = None
-
-	if 'order_id' in session:
-		order = DBSession.query(Order).get(session['order_id'])
-
-	if not order:
+	if 'order_id' not in session:
 		abort(404)
 
-	product = DBSession.query(Product).get(product_id)
-
-	if not product:
-		abort(404)	## temporarily
-
-	if product.qty < request.form['qty']:
-		abort(400)	## temporarily
-
-	order_product = order.product_items.get(product_id)
+	order_product = DBSession.query(OrderProduct).get(session['order_id'], product_id)
 
 	if not order_product:
-		abort(404)	## temporarily
+		abort(404)
+
+	if order_product.product.qty < request.form['qty']:
+		abort(400)	## temporarily
 
 	order_product.qty = request.form['qty']
 
 	try:
 		DBSession.add(order_product)
+		DBSession.flush()
 		DBSession.commit()
 	except SQLAlchemyError as e:
 		print(e)
@@ -212,32 +178,23 @@ def order_product_qty(product_id):
 			'id': order_product.product_id,
 			'qty': order_product.qty,
 		},
-		total_price=sum(link.qty * link.product.price for link in order.links),
+		total_price=sum(link.qty * link.product.price for link in order_product.order.links),
 	)
 
 
 @app.route('/order/product/<int:product_id>/delete', methods=['POST'])
 def order_product_delete(product_id):
-	order = None
-
-	if 'order_id' in session:
-		order = DBSession.query(Order).get(session['order_id'])
-
-	if not order:
+	if 'order_id' not in session:
 		abort(404)
 
-	product = DBSession.query(Product).get(product_id)
-
-	if not product:
-		abort(404)	## temporarily
-
-	order_product = order.product_items.get(product_id)
+	order_product = DBSession.query(OrderProduct).get(session['order_id'], product_id)
 
 	if not order_product:
-		abort(404)	## temporarily
+		abort(404)
 
 	try:
 		DBSession.delete(order_product)
+		DBSession.flush()
 		DBSession.commit()
 	except SQLAlchemyError as e:
 		print(e)
@@ -247,8 +204,8 @@ def order_product_delete(product_id):
 		abort(400)	## temporarily
 
 	return jsonify(
-		product_id=product.id,
-		total_price=sum(link.qty * link.product.price for link in order.links),
+		product_id=order_product.product_id,
+		total_price=sum(link.qty * link.product.price for link in order_product.order.links),
 	)
 
 
@@ -259,7 +216,7 @@ def admin_order_list():
 			(Order.status == OrderStatus.paid.name).desc(),
 		)
 
-    return render_template('admin_order_list.html', products=orders)
+	return render_template('admin_order_list.html', orders=orders)
 
 
 @app.route('/admin/order/<int:id>/view')
@@ -294,6 +251,9 @@ def admin_order_delete(id):
 
 		return redirect(url_for('admin_order_view', id=order.id))
 
+	if session.get('order_id') == id:
+		session.pop('order_id', None)
+
 	flash('Order was deleted successfully')
 
 	return redirect(url_for('admin_order_list'))
@@ -306,7 +266,7 @@ def order_list():
 			(Order.status == OrderStatus.paid.name).desc(),
 		)
 
-    return render_template('order_list.html', products=orders)
+	return render_template('order_list.html', orders=orders)
 
 
 @app.route('/order/<int:id>/view')
@@ -323,10 +283,7 @@ def order_view():
 
 @app.route('/order/pay', methods=['POST'])
 def order_pay():
-	order = None
-
-	if 'order_id' in session:
-		order = DBSession.query(Order).get(session['order_id'])
+	order = Order.get_from_session()
 
 	if not order:
 		abort(404)
