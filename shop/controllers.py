@@ -252,6 +252,18 @@ def order_product_delete(product_id):
 	)
 
 
+@app.route('/order/<int:id>/view')
+def order_view():
+	order = DBSession.query(Order).get(id)
+
+	if not order:
+		flash('Order not found')
+
+		return redirect(url_for('order_list'))
+
+	return render_template('order_view.html', order=order)
+
+
 @app.route('/order/pay', methods=['POST'])
 def order_pay():
 	order = None
@@ -284,4 +296,4 @@ def order_pay():
 
 	session.pop('order_id', None)
 
-	return redirect(url_for('order_payed', id=order.id))
+	return redirect(url_for('order_view', id=order.id))
