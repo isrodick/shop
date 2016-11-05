@@ -26,6 +26,8 @@ from shop.forms import (
 	OrderPayForm,
 )
 
+import uuid
+
 
 @app.route('/admin/product/list')
 def admin_product_list():
@@ -111,9 +113,13 @@ def admin_product_delete(id):
 
 @app.route('/')
 def product_list():
-    products = DBSession.query(Product).order_by(Product.title.asc())
+	products = DBSession.query(Product).order_by(Product.title.asc())
 
-    return render_template('product_list.html', products=products)
+	return render_template(
+		'product_list.html',
+		products=products,
+		add_basket_id=str(uuid.uuid1()),
+	)
 
 
 @app.route('/basket', methods=['GET', 'POST'])
