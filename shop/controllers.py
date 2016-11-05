@@ -250,3 +250,37 @@ def order_product_delete(product_id):
 		product_id=product.id,
 		total_price=sum(link.qty * link.product.price for link in order.links),
 	)
+
+
+@app.route('/order/pay', methods=['POST'])
+def order_pay():
+	order = None
+
+	if 'order_id' in session:
+		order = DBSession.query(Order).get(session['order_id'])
+
+	if not order:
+		abort(404)
+
+	if request.form['payment_method'] not in PAYMENT_METHODS:
+		flash('Invalid payment method')
+
+		return redirect(url_for('basket'))
+
+	order.status = OrderStatus.paid
+
+	try:
+		DBSession.add(order)
+		DBSession.commit()
+	except SQLAlchemyError as e:
+		print(e)
+
+		DBSession.rollback()
+
+		flash('Error during order payment')
+
+		return redirect(url_for('basket'))
+
+	session.pop('order_id', None)
+
+	return redirect(url_for('order_payed', id=order.id))
