@@ -26,8 +26,6 @@ from shop.forms import (
 	OrderPayForm,
 )
 
-import uuid
-
 
 @app.route('/admin/product/list')
 def admin_product_list():
@@ -118,7 +116,6 @@ def product_list():
 	return render_template(
 		'product_list.html',
 		products=products,
-		add_basket_id=str(uuid.uuid1()),
 	)
 
 
