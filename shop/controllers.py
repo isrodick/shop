@@ -15,6 +15,7 @@ from shop.models import (
     Product,
     Order,
     OrderProduct,
+    PAYMENT_METHODS,
 )
 
 
@@ -114,4 +115,4 @@ def basket():
 	if 'order_id' in session:
 		order = DBSession.query(Order).get(session['order_id'])
 
-	return render_template('basket.html', order=order)
+	return render_template('basket.html', order=order, payment_methods=PAYMENT_METHODS)
