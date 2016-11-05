@@ -26,9 +26,9 @@ class OrderPayForm(Form):
 	submit = SubmitField('Pay', [validators.InputRequired()])
 	payment_method = SelectField(
 		'Payment Method',
-		choices=PaymentMethod.get_options(),
 		[
 			validators.InputRequired(),
 			validators.AnyOf(PaymentMethod._member_names_),
 		],
+		choices=PaymentMethod.get_options(),
 	)
