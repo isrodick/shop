@@ -53,6 +53,12 @@ class Product(Base):
 	image_url = Column(Unicode(255))
 	qty = Column(Integer, nullable=False)
 
+	def get_img_url(self):
+		return self.image_url if self.image_url is not None else url_for('static', filename='imgs/no_image.png')
+
+	def in_stock(self):
+		return True if self.qty > 0 else False
+
 
 class Order(Base):
 	__tablename__ = 'order'
