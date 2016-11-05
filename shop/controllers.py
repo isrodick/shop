@@ -43,7 +43,7 @@ def admin_product_new():
 		product = Product()
 
 		product.title = form.title.data
-		product.prie = form.prie.data
+		product.price = form.price.data
 		product.image_url = form.image_url.data
 		product.qty = form.qty.data
 

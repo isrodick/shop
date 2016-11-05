@@ -57,7 +57,7 @@ class Product(Base):
 	qty = Column(Integer, nullable=False)
 
 	def get_img_url(self):
-		return self.image_url if self.image_url is not None else url_for('static', filename='imgs/no_image.png')
+		return self.image_url if self.image_url else url_for('static', filename='imgs/no_image.png')
 
 	def in_stock(self):
 		return True if self.qty > 0 else False
