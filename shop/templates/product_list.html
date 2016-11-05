@@ -2,7 +2,7 @@
 
 {% block body %}
     {% for product in products %}
-        <div class="panel panel-default">
+        <div class="panel panel-default product-item">
             <div class="panel-heading">
             {% if product.in_stock() %}
                 <button class="btn btn-primary add-product" type="button">
