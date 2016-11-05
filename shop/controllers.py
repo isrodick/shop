@@ -268,6 +268,7 @@ def order_pay():
 		return redirect(url_for('basket'))
 
 	order.status = OrderStatus.paid
+	order.payment_method = request.form['payment_method']
 
 	try:
 		DBSession.add(order)
