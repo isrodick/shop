@@ -14,6 +14,13 @@ import enum
 from shop.database import Base
 
 
+PAYMENT_METHODS = {
+	'liqpay': 'LiqPay',
+	'privat24': 'Privat24',
+	'paypal': 'PayPal',
+}
+
+
 def check_qty_positive(tablename):
 	return CheckConstraint('qty >= 0', name='{}_check_qty_positive'.format(tablename))
 
