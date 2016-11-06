@@ -25,12 +25,17 @@
                 <ul class="sidebar-nav">
                 {% if 'admin' not in request.endpoint %}
                     <li>
-                        <a class="{{ 'active' if request.endpoint == 'product_list' }}" href="{{ url_for('product_list') }}">
+                        <a class="{{ 'active' if request.endpoint == 'product_list' else '' }}" href="{{ url_for('product_list') }}">
                             Products
                         </a>
                     </li>
                     <li>
-                        <a class="{{ 'active' if request.endpoint == 'basket' }}" href="{{ url_for('basket') }}">Basket</a>
+                        <a class="{{ 'active' if request.endpoint == 'basket' else ''}} basket-link" href="{{ url_for('basket') }}">
+                            Basket
+                        {% if total_products_qty %}
+                            <span class="sidebar-badge">{{total_products_qty}}</span>
+                        {% endif %}
+                        </a>
                     </li>
                 {% else %}
                     <li class="sidebar-brand">
@@ -39,7 +44,7 @@
                         </a>
                     </li>
                     <li>
-                        <a class="{{ 'active' if request.endpoint == 'product_list' }}" href="{{ url_for('admin_product_list') }}">
+                        <a class="{{ 'active' if request.endpoint == 'product_list' else '' }}" href="{{ url_for('admin_product_list') }}">
                             Products
                         </a>
                     </li>
