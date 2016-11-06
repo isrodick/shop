@@ -106,6 +106,9 @@ class Order(Base):
 
 		return order
 
+	def has_products(self):
+		return self.get_total_product_qty() > 0
+
 	def get_total_price(self):
 		return sum(link.qty * link.product.price for link in self.links)
 
