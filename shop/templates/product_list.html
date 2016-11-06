@@ -9,12 +9,16 @@
         <div class="panel panel-default product-item">
             <div class="panel-heading">
             {% if product.in_stock() %}
-                <button class="btn btn-primary add-product"
-                    type="button"
-                    data-url="{{ url_for('order_product_add', product_id=product.id) }}"
-                >
-                    Add to Basket
-                </button>
+                {% if product.id not in order_product_ids %}
+                    <button class="btn btn-primary add-product"
+                        type="button"
+                        data-url="{{ url_for('order_product_add', product_id=product.id) }}"
+                    >
+                        Add to Basket
+                    </button>
+                {% else %}
+                    <span class="label label-info">The product in the basket</span>
+                {% endif %}
             {% else %}
                 <span class="label label-warning">Product not in stock</span>
             {% endif %}
