@@ -16,12 +16,40 @@
 {% endmacro %}
 
 
-{% macro render_form(form, action_url, method='post') %}
+{% macro render_form(form, action_url, method='post', delete_url=None) %}
     <form class="form-horizontal" method="{{ method }}" action="{{ action_url }}">
         {{ caller() }}
 
-    {% if 'submit' in form %}
-        {{ form.submit(class="btn btn btn-success pull-right")|safe }}
-    {% endif %}
+        <a href="{{ url_for('admin_product_list') }}" class="btn btn btn-default" role="button">
+            Cancel
+        </a>
+
+        <div class="pull-right">
+        {% if delete_url %}
+            <a href="#" class="btn btn btn-danger" data-href="{{ delete_url }}" data-toggle="modal" data-target="#confirm-delete" role="button">
+                Delete
+            </a>
+
+            <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            Delete Confirm
+                        </div>
+                        <div class="modal-body">
+                            Are you sure you want to remove this product?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                            <a class="btn btn-danger btn-ok">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        {% if 'submit' in form %}
+            {{ form.submit(class="btn btn btn-success")|safe }}
+        {% endif %}
+        </div>
     </form>
 {% endmacro %}
