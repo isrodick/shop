@@ -70,7 +70,7 @@ def admin_product_edit(id):
 
 	form = ProductEditForm(request.form, product)
 
-	if request.method == 'POST' and form.validate():
+	if request.method == 'POST' and form.validate(current_product=product):
 		form.populate_obj(product)
 
 		DBSession.add(product)
