@@ -126,30 +126,32 @@ def product_list():
 @app.route('/basket', methods=['GET', 'POST'])
 def basket():
 	order = Order.get_from_session()
+	form = None
 
-	if not order:
-		flash('Order not found')
+	if request.method == 'POST':
+		if not order:
+			flash('Order not found')
 
-		return redirect(url_for('product_list'))
+			return redirect(url_for('product_list'))
 
-	form = OrderPayForm(request.form, order)
+		form = OrderPayForm(request.form, order)
 
-	if request.method == 'POST' and form.validate():
-		form.populate_obj(order)
-		order.status = OrderStatus.paid
+		if form.validate():
+			form.populate_obj(order)
+			order.status = OrderStatus.paid
 
-		DBSession.add(order)
-		DBSession.commit()
+			DBSession.add(order)
+			DBSession.commit()
 
-		session.pop('order_id', None)
+			session.pop('order_id', None)
 
-		flash('Order paid successfully')
+			flash('Order paid successfully')
 
-		return redirect(url_for('task_list'))
-	elif request.method == 'POST':
-		flash('Validation error. Please enter the correct data')
+			return redirect(url_for('task_list'))
+		else:
+			flash('Validation error. Please enter the correct data')
 
-	return render_template('basket.html', form=form, payment_methods=PaymentMethod)
+	return render_template('basket.html', form=form, order=order, payment_methods=PaymentMethod)
 
 
 @app.route('/order/product/<int:product_id>/add')
