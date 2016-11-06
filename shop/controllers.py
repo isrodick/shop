@@ -123,6 +123,7 @@ def product_list():
 	return render_template(
 		'product_list.html',
 		products=products,
+		order_product_ids=Order.get_product_ids_from_session(),
 		total_products_qty=Order.get_tatal_product_qty_from_session(),
 	)
 
