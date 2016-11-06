@@ -190,6 +190,13 @@ def order_product_add(product_id):
 			message='Error during add the product to the backet',
 		)
 
+	_order_product = DBSession.query(OrderProduct).get((order.id, product.id))
+	if _order_product:
+		return jsonify(
+			status='error',
+			message='This product already at the basket',
+		)
+
 	order_product = OrderProduct()
 	order_product.order_id = order.id
 	order_product.product_id = product.id
@@ -200,7 +207,6 @@ def order_product_add(product_id):
 
 	return jsonify(
 		status='success',
-		message='Product added to the basket',
 		total_products_qty=order_product.order.get_total_product_qty(),
 	)
 
