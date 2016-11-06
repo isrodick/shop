@@ -158,6 +158,7 @@ def basket():
 		'basket.html',
 		form=form,
 		order=order,
+		sorted_links=sorted(order.links, key=lambda link: link.product.title),
 		basket_has_products=order.has_products() if order else False,
 		payment_methods=PaymentMethod,
 		total_products_qty=Order.get_tatal_product_qty_from_session(),
@@ -211,18 +212,37 @@ def order_product_add(product_id):
 
 @app.route('/order/product/<int:product_id>/qty', methods=['POST'])
 def order_product_qty(product_id):
-	if 'order_id' not in session:
-		abort(404)
+	try:
+		qty = int(request.form['qty'])
+	except (ValueError, TypeError) as e:
+		print(e)
 
-	order_product = DBSession.query(OrderProduct).get(session['order_id'], product_id)
+		return jsonify(
+			status='valid-error',
+			message='Please enter integer value',
+		)
+
+	if 'order_id' not in session:
+		return jsonify(
+			status='error',
+			message='Order not found',
+		)
+
+	order_product = DBSession.query(OrderProduct).get((session['order_id'], product_id))
 
 	if not order_product:
-		abort(404)
+		return jsonify(
+			status='error',
+			message='This product is not added to the basket',
+		)
 
-	if order_product.product.qty < request.form['qty']:
-		abort(400)	## temporarily
+	if order_product.product.qty < qty:
+		return jsonify(
+			status='valid-error',
+			message='Only {} product(s) in stock'.format(order_product.product.qty),
+		)
 
-	order_product.qty = request.form['qty']
+	order_product.qty = qty
 
 	try:
 		DBSession.add(order_product)
@@ -233,15 +253,18 @@ def order_product_qty(product_id):
 
 		DBSession.rollback()
 
-		abort(400)	## temporarily
+		return jsonify(
+			status='error',
+			message='Error during update product qty to the basket',
+		)
 
 	return jsonify(
 		product={
 			'id': order_product.product_id,
 			'qty': order_product.qty,
 		},
-		total_price=order_product.order.get_total_price(),
-		total_products_qty=order_product.get_total_product_qty(),
+		total_price=str(order_product.order.get_total_price()),
+		total_products_qty=order_product.order.get_total_product_qty(),
 	)
 
 
