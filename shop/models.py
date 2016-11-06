@@ -106,6 +106,24 @@ class Order(Base):
 
 		return order
 
+	def get_total_price(self):
+		return sum(link.qty * link.product.price for link in self.links)
+
+	def get_total_product_qty(self):
+		return sum(link.qty for link in self.links)
+
+	@classmethod
+	def get_tatal_product_qty_from_session(cls):
+		order = None
+
+		if 'order_id' in session:
+			order = order = DBSession.query(cls).get(session['order_id'])
+
+		if not order:
+			return None
+
+		return order.get_total_product_qty()
+
 
 class OrderProduct(Base):
 	__tablename__ = 'order_product'
