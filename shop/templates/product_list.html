@@ -1,11 +1,18 @@
 {% extends "base.html" %}
 
+{% block script %}
+    <script src="{{ url_for('static', filename='js/product-list.js') }}"></script>
+{% endblock %}
+
 {% block body %}
     {% for product in products %}
         <div class="panel panel-default product-item">
             <div class="panel-heading">
             {% if product.in_stock() %}
-                <button class="btn btn-primary add-product" type="button">
+                <button class="btn btn-primary add-product"
+                    type="button"
+                    data-url="{{ url_for('order_product_add', product_id=product.id) }}"
+                >
                     Add to Basket
                 </button>
             {% else %}
