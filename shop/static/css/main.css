@@ -6,7 +6,7 @@
 	list-style-type: none;
 }
 
-.form-group.has-error .errors li {
+.form-group.has-error .errors .error {
 	color: #a94442;
 }
 
