@@ -131,15 +131,13 @@ def product_list():
 @app.route('/basket', methods=['GET', 'POST'])
 def basket():
 	order = Order.get_from_session()
-	form = None
+	form = OrderPayForm(request.form)
 
 	if request.method == 'POST':
 		if not order:
 			flash('Order not found')
 
 			return redirect(url_for('product_list'))
-
-		form = OrderPayForm(request.form, order)
 
 		if form.validate():
 			form.populate_obj(order)
