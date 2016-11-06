@@ -16,6 +16,7 @@ from shop.models import (
 	PaymentMethod,
 )
 
+import itertools
 
 def submit(title):
 	def metaclass(name, parents, attributes):
@@ -68,5 +69,5 @@ class OrderPayForm(Form):
 			validators.InputRequired(),
 			validators.AnyOf(PaymentMethod._member_names_),
 		],
-		choices=PaymentMethod.get_options(),
+		choices=list(itertools.chain([(None, '-- Please Select --')], PaymentMethod.get_options())),
 	)
