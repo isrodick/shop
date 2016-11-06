@@ -117,10 +117,7 @@ class Order(Base):
 
 	@classmethod
 	def get_tatal_product_qty_from_session(cls):
-		order = None
-
-		if 'order_id' in session:
-			order = order = DBSession.query(cls).get(session['order_id'])
+		order = cls.get_from_session()
 
 		if not order:
 			return None
