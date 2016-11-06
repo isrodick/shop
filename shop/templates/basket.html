@@ -3,11 +3,12 @@
 {% extends "base.html" %}
 
 {% block script %}
+    <script src="{{ url_for('static', filename='js/basket.js') }}"></script>
 {% endblock %}
 
 {% block body %}
     {% if basket_has_products %}
-        {% for link in order.links %}
+        {% for link in sorted_links %}
                 {% set product = link.product %}
                 <div class="panel panel-default product-item">
                     <div class="panel-body">
@@ -30,13 +31,13 @@
                                         <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
                                             <div class="input-group">
                                                 <span class="input-group-btn">
-                                                    <button type="button" class="btn btn-default btn-number" data-type="minus">
+                                                    <button type="button" class="btn btn-default btn-number" data-target="#product-{{ link.product_id }}-qty" data-type="minus">
                                                         <span class="glyphicon glyphicon-minus"></span>
                                                     </button>
                                                 </span>
-                                                <input type="text" name="quant[1]" class="form-control input-number" value="1" min="1" max="10">
+                                                <input id="product-{{ link.product_id }}-qty" type="text" name="qty" class="form-control" value="{{ link.qty }}" data-url="{{ url_for('order_product_qty', product_id=link.product_id) }}">
                                                 <span class="input-group-btn">
-                                                    <button type="button" class="btn btn-default btn-number" data-type="plus">
+                                                    <button type="button" class="btn btn-default btn-number" data-target="#product-{{ link.product_id }}-qty" data-type="plus">
                                                         <span class="glyphicon glyphicon-plus"></span>
                                                     </button>
                                                 </span>
