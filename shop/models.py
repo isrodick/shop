@@ -106,6 +106,15 @@ class Order(Base):
 
 		return order
 
+	@classmethod
+	def get_product_ids_from_session(cls):
+		order = cls.get_from_session()
+
+		if not order:
+			return None
+
+		return (link.product_id for link in order.links)
+
 	def has_products(self):
 		return self.get_total_product_qty() > 0
 
