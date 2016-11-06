@@ -17,7 +17,7 @@
                                 </a>
                             </div>
                         </div>
-                        {% call render_form(form, request.path) %}
+                        {% call render_form(form, request.path, delete_url=url_for('admin_product_delete', id=product.id)) %}
                             {{ render_field(form.title) }}
                             {{ render_field(form.price) }}
                             {{ render_field(form.image_url) }}
