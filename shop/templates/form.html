@@ -16,13 +16,15 @@
 {% endmacro %}
 
 
-{% macro render_form(form, action_url, method='post', delete_url=None) %}
+{% macro render_form(form, action_url, method='post', cancel_btn=True, delete_url=None) %}
     <form class="form-horizontal" method="{{ method }}" action="{{ action_url }}">
         {{ caller() }}
 
+    {% if cancel_btn %}
         <a href="{{ url_for('admin_product_list') }}" class="btn btn btn-default" role="button">
             Cancel
         </a>
+    {% endif %}
 
         <div class="pull-right">
         {% if delete_url %}
