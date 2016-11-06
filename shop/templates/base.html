@@ -13,6 +13,7 @@
 
         <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
         <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/ajax-modal.js') }}"></script>
 
     </head>
 
@@ -48,11 +49,16 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-lg-12">
+                            <div class="flash-message-block">
                             {% for message in get_flashed_messages() %}
                                 <div class="alert alert-danger" role="alert">
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
                                     {{ message }}
                                 </div>
                             {% endfor %}
+                            </div>
 
                             {% block body %}{% endblock %}
                         </div>
