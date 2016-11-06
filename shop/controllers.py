@@ -120,7 +120,11 @@ def admin_product_delete(id):
 def product_list():
 	products = DBSession.query(Product).order_by(Product.title.asc())
 
-	return render_template('product_list.html', products=products)
+	return render_template(
+		'product_list.html',
+		products=products,
+		total_products_qty=Order.get_tatal_product_qty_from_session(),
+	)
 
 
 @app.route('/basket', methods=['GET', 'POST'])
@@ -151,23 +155,38 @@ def basket():
 		else:
 			flash('Validation error. Please enter the correct data')
 
-	return render_template('basket.html', form=form, order=order, payment_methods=PaymentMethod)
+	return render_template(
+		'basket.html',
+		form=form,
+		order=order,
+		payment_methods=PaymentMethod,
+		total_products_qty=Order.get_tatal_product_qty_from_session(),
+	)
 
 
-@app.route('/order/product/<int:product_id>/add')
+@app.route('/order/product/<int:product_id>/add', methods=['POST'])
 def order_product_add(product_id):
 	product = DBSession.query(Product).get(product_id)
 
 	if not product:
-		abort(404)	## temporarily
+		return jsonify(
+			status='error',
+			message='Product not found',
+		)
 
 	if product.qty < 1:
-		abort(400)	## temporarily
+		return jsonify(
+			status='error',
+			message='Product is not available',
+		)
 
 	try:
 		order = Order.get_from_session(create=True)
 	except FlushError as e:
-		abort(400)
+		return jsonify(
+			status='error',
+			message='Error during add the product to the backet',
+		)
 
 	order_product = OrderProduct()
 	order_product.order_id = order.id
@@ -178,7 +197,9 @@ def order_product_add(product_id):
 	DBSession.commit()
 
 	return jsonify(
-		total_products_qty=sum(link.qty for link in order.links),
+		status='success',
+		message='Product added to the basket',
+		total_products_qty=order_product.order.get_total_product_qty(),
 	)
 
 
@@ -213,7 +234,8 @@ def order_product_qty(product_id):
 			'id': order_product.product_id,
 			'qty': order_product.qty,
 		},
-		total_price=sum(link.qty * link.product.price for link in order_product.order.links),
+		total_price=order_product.order.get_total_price(),
+		total_products_qty=order_product.get_total_product_qty(),
 	)
 
 
@@ -240,7 +262,8 @@ def order_product_delete(product_id):
 
 	return jsonify(
 		product_id=order_product.product_id,
-		total_price=sum(link.qty * link.product.price for link in order_product.order.links),
+		total_price=order_product.get_total_price(),
+		total_products_qty=order_product.order.get_total_product_qty(),
 	)
 
 
