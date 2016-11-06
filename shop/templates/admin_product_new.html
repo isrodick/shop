@@ -10,7 +10,7 @@
             <div class="panel-body">
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                        {% call render_form(form, url_for('admin_product_new')) %}
+                        {% call render_form(form, request.path) %}
                             {{ render_field(form.title) }}
                             {{ render_field(form.price) }}
                             {{ render_field(form.image_url) }}
