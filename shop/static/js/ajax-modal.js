@@ -42,7 +42,7 @@ $(function() {
 			var message = data.message,
 				_status = data.status;
 
-			if (data.status == 'error') {
+			if (_status == 'error') {
 				message = message || 'Error';
 			}
 
