@@ -222,6 +222,12 @@ def order_product_qty(product_id):
 			message='Please enter integer value',
 		)
 
+	if qty <= 0:
+		return jsonify(
+			status='valid-error',
+			message='Please enter positive value',
+		)
+
 	if 'order_id' not in session:
 		return jsonify(
 			status='error',
