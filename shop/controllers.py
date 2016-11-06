@@ -90,24 +90,30 @@ def admin_product_delete(id):
 	product = DBSession.query(Product).get(id)
 
 	if not product:
-		flash('Product not found')
-
-		return redirect(url_for('admin_product_list'))
+		return jsonify(
+			status='error',
+			message='Product not found',
+		)
 
 	try:
 		DBSession.delete(product)
 		DBSession.commit()
 	except SQLAlchemyError as e:
 		print(e)
-		flash('Product could not be deleted')
 
 		DBSession.rollback()
 
-		return redirect(url_for('admin_product_edit', id=product.id))
+		return jsonify(
+			status='error',
+			message='Product could not be deleted',
+		)
 
 	flash('Product was deleted successfully')
 
-	return redirect(url_for('admin_product_list'))
+	return jsonify(
+		status='success',
+		redirect_url=url_for('admin_product_list'),
+	)
 
 
 @app.route('/')
