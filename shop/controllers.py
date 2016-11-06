@@ -159,6 +159,7 @@ def basket():
 		'basket.html',
 		form=form,
 		order=order,
+		basket_has_products=order.has_products() if order else False,
 		payment_methods=PaymentMethod,
 		total_products_qty=Order.get_tatal_product_qty_from_session(),
 	)
