@@ -20,6 +20,7 @@
         <div id="wrapper">
             <div id="sidebar-wrapper">
                 <ul class="sidebar-nav">
+                {% if 'admin' not in request.endpoint %}
                     <li>
                         <a class="{{ 'active' if request.endpoint == 'product_list' }}" href="{{ url_for('product_list') }}">
                             Products
@@ -28,6 +29,18 @@
                     <li>
                         <a class="{{ 'active' if request.endpoint == 'basket' }}" href="{{ url_for('basket') }}">Basket</a>
                     </li>
+                {% else %}
+                    <li class="sidebar-brand">
+                        <a href="{{ url_for('product_list') }}">
+                            Shop
+                        </a>
+                    </li>
+                    <li>
+                        <a class="{{ 'active' if request.endpoint == 'product_list' }}" href="{{ url_for('admin_product_list') }}">
+                            Products
+                        </a>
+                    </li>
+                {% endif %}
                 </ul>
             </div>
 
