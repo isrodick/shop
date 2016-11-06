@@ -15,34 +15,35 @@
                         <div class="row">
                             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
                                 <a href="#" class="thumbnail">
-                                    <img src="{{ link.product.get_img_url() }}">
+                                    <img src="{{ product.get_img_url() }}">
                                 </a>
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-9 col-xs-6">
                                 <p>
-                                    <b>{{ link.product.title }}</b>
+                                    <b>{{ product.title }}</b>
                                 </p>
                                 <p>
-                                    <b>Price:</b> {{ link.product.price }}$
+                                    <b>Price:</b> {{ product.price }}$
                                 </p>
                                 <p>
                                     <b>QTY:</b>
-                                    <div class="row">
-                                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
-                                            <div class="input-group form-group">
+                                    <div class="row form-group">
+                                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-6">
+                                            <div class="input-group">
                                                 <span class="input-group-btn">
-                                                    <button type="button" class="btn btn-default btn-number" data-target="#product-{{ link.product_id }}-qty" data-type="minus">
+                                                    <button type="button" class="btn btn-default btn-number" data-target="#product-{{ product.id }}-qty" data-type="minus">
                                                         <span class="glyphicon glyphicon-minus"></span>
                                                     </button>
                                                 </span>
-                                                <input id="product-{{ link.product_id }}-qty" type="text" name="qty" class="form-control" value="{{ link.qty }}" data-url="{{ url_for('order_product_qty', product_id=link.product_id) }}">
+                                                <input id="product-{{ product.id }}-qty" type="text" name="qty" class="form-control" value="{{ link.qty }}" data-url="{{ url_for('order_product_qty', product_id=product.id) }}" data-max="{{ product.qty }}">
                                                 <span class="input-group-btn">
-                                                    <button type="button" class="btn btn-default btn-number" data-target="#product-{{ link.product_id }}-qty" data-type="plus">
+                                                    <button type="button" class="btn btn-default btn-number" data-target="#product-{{ product.id }}-qty" data-type="plus" {{ 'disabled="disabled"' if link.qty >= product.qty else '' }}>
                                                         <span class="glyphicon glyphicon-plus"></span>
                                                     </button>
                                                 </span>
                                             </div>
                                         </div>
+                                        <div class="col-lg-10 col-md-10 col-sm-10 col-xs-6 errors"></div>
                                     </div>
                                 </p>
                                 <p>
