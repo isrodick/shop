@@ -71,7 +71,7 @@ def admin_product_edit(id):
 	form = ProductEditForm(request.form, product)
 
 	if request.method == 'POST' and form.validate():
-		form.populate_obj(products)
+		form.populate_obj(product)
 
 		DBSession.add(product)
 		DBSession.commit()
@@ -82,7 +82,7 @@ def admin_product_edit(id):
 	elif request.method == 'POST':
 		flash('Validation error. Please enter the correct data')
 
-	return render_template('admin_product_edit.html', form=form)
+	return render_template('admin_product_edit.html', form=form, product=product)
 
 
 @app.route('/admin/product/<int:id>/delete', methods=['POST'])
@@ -114,10 +114,7 @@ def admin_product_delete(id):
 def product_list():
 	products = DBSession.query(Product).order_by(Product.title.asc())
 
-	return render_template(
-		'product_list.html',
-		products=products,
-	)
+	return render_template('product_list.html', products=products)
 
 
 @app.route('/basket', methods=['GET', 'POST'])
