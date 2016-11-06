@@ -9,3 +9,29 @@
 .form-group.has-error .errors li {
 	color: #a94442;
 }
+
+.container-fluid a.decoration-non {
+	color: #31708f;
+}
+
+.container-fluid a.decoration-non:link {
+	text-decoration: none;
+}
+
+.container-fluid a.decoration-non:hover {
+	text-decoration: none;
+}
+
+#sidebar-wrapper .sidebar-badge {
+    min-width: 10px;
+    padding: 3px 7px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    background-color: #777;
+    border-radius: 10px;
+}
