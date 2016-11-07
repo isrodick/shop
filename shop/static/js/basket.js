@@ -1,12 +1,27 @@
 $(function() {
 	$('.product-item').on('click', '.btn-number', function(ev) {
 		var $form_group = $(this).closest('.form-group'),
+			$errors_row = $form_group.find('.errors'),
 			$btn_plus = $form_group.find('button[data-type="plus"]'),
 			$btn_minus = $form_group.find('button[data-type="minus"]'),
 			$input = $($(this).data('target')),
 			btn_type = $(this).data('type'),
-			qty = $input.val(),
+			qty = $input.val().trim(),
 			max = $input.data('max');
+
+		if ( !(/^\d+$/.test(qty)) ) {
+			var $error_p = $('<p/>'),
+				$error_p = $error_p.addClass('error'),
+				$error_p = $error_p.html('Please enter integer value');
+
+			$form_group.addClass('has-error');
+
+			$errors_row.html($error_p);
+
+			$input.val(qty);
+
+			return;
+		}
 
 		if (btn_type == 'plus') {
 			$input.val(++qty);
@@ -33,13 +48,9 @@ $(function() {
 				qty: qty
 			}
 		}).done(function(data, status, xhr) {
-			var $errors_row = $form_group.find('.errors');
-
 			if (data.status == 'error') {
 				HELPER.render_flash_message(data.message || 'Error', data.status);
 			} else if (data.status == 'valid-error') {
-				var $errors_row = $form_group.find('.errors');
-
 				var $error_p = $('<p/>'),
 					$error_p = $error_p.addClass('error'),
 					$error_p = $error_p.html(data.message || 'Validation error');
