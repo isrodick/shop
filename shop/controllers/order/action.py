@@ -124,12 +124,18 @@ def order_product_qty(product_id):
 @app.route('/order/product/<int:product_id>/delete', methods=['POST'])
 def order_product_delete(product_id):
 	if 'order_id' not in session:
-		abort(404)
+		return jsonify(
+			status='error',
+			message='Order not found',
+		)
 
-	order_product = DBSession.query(OrderProduct).get(session['order_id'], product_id)
+	order_product = DBSession.query(OrderProduct).get((session['order_id'], product_id))
 
 	if not order_product:
-		abort(404)
+		return jsonify(
+			status='error',
+			message='This product is not added to the basket',
+		)
 
 	try:
 		DBSession.delete(order_product)
@@ -143,6 +149,7 @@ def order_product_delete(product_id):
 		abort(400)	## temporarily
 
 	return jsonify(
+		status='success',
 		product_id=order_product.product_id,
 		total_price=order_product.get_total_price(),
 		total_products_qty=order_product.order.get_total_product_qty(),
