@@ -27,6 +27,12 @@ $(function() {
 			var $sidebar = $('#sidebar-wrapper'),
 				$basket_link = $sidebar.find('.basket-link');
 
+			if (qty <= 0) {
+				$basket_link.html('Basket');
+
+				return;
+			}
+
 			var $badge = $('<span/>'),
 				$badge = $badge.addClass('sidebar-badge'),
 				$badge = $badge.html(qty);
