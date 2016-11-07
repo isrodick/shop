@@ -31,7 +31,7 @@
                                         <div class="col-lg-2 col-md-2 col-sm-2 col-xs-6">
                                             <div class="input-group">
                                                 <span class="input-group-btn">
-                                                    <button type="button" class="btn btn-default btn-number" data-target="#product-{{ product.id }}-qty" data-type="minus">
+                                                    <button type="button" class="btn btn-default btn-number" data-target="#product-{{ product.id }}-qty" data-type="minus" {{ 'disabled="disabled"' if link.qty <= 1 else '' }}>
                                                         <span class="glyphicon glyphicon-minus"></span>
                                                     </button>
                                                 </span>
