@@ -1,4 +1,14 @@
 $(function() {
+	function render_error($form_group, $errors_row, message) {
+		var $error_p = $('<p/>'),
+			$error_p = $error_p.addClass('error'),
+			$error_p = $error_p.html(message);
+
+		$form_group.addClass('has-error');
+
+		$errors_row.html($error_p);
+	};
+
 	$('.product-item').on('click', '.btn-number', function(ev) {
 		var $form_group = $(this).closest('.form-group'),
 			$errors_row = $form_group.find('.errors'),
@@ -10,13 +20,7 @@ $(function() {
 			max = $input.data('max');
 
 		if ( !(/^\d+$/.test(qty)) ) {
-			var $error_p = $('<p/>'),
-				$error_p = $error_p.addClass('error'),
-				$error_p = $error_p.html('Please enter integer value');
-
-			$form_group.addClass('has-error');
-
-			$errors_row.html($error_p);
+			render_error($form_group, $errors_row, 'Please enter integer value');
 
 			$input.val(qty);
 
@@ -51,13 +55,7 @@ $(function() {
 			if (data.status == 'error') {
 				HELPER.render_flash_message(data.message || 'Error', data.status);
 			} else if (data.status == 'valid-error') {
-				var $error_p = $('<p/>'),
-					$error_p = $error_p.addClass('error'),
-					$error_p = $error_p.html(data.message || 'Validation error');
-
-				$form_group.addClass('has-error');
-
-				$errors_row.html($error_p);
+				render_error($form_group, $errors_row, data.message || 'Validation error');
 			} else {
 				$form_group.removeClass('has-error');
 				$errors_row.empty();
