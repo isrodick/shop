@@ -1,13 +1,29 @@
 $(function() {
 	$('.product-item').on('click', '.btn-number', function(ev) {
-		var $input = $($(this).data('target')),
+		var $form_group = $(this).closest('.form-group'),
+			$btn_plus = $form_group.find('button[data-type="plus"]'),
+			$btn_minus = $form_group.find('button[data-type="minus"]'),
+			$input = $($(this).data('target')),
 			btn_type = $(this).data('type'),
-			qty = $input.val();
+			qty = $input.val(),
+			max = $input.data('max');
 
 		if (btn_type == 'plus') {
 			$input.val(++qty);
 		} else if (btn_type == 'minus') {
 			$input.val(--qty);
+		}
+
+		if (qty >= max) {
+			$btn_plus.attr('disabled', true);
+		} else {
+			$btn_plus.attr('disabled', false);
+		}
+
+		if (qty > 1) {
+			$btn_minus.attr('disabled', false);
+		} else {
+			$btn_minus.attr('disabled', true);
 		}
 
 		$.ajax({
@@ -17,22 +33,7 @@ $(function() {
 				qty: qty
 			}
 		}).done(function(data, status, xhr) {
-			var $form_group = $input.closest('.form-group'),
-				$errors_row = $form_group.find('.errors');
-
-			$form_group.removeClass('has-error');
-			$errors_row.empty();
-
-			if (data.total_products_qty) {
-				var $sidebar = $('#sidebar-wrapper'),
-					$basket_link = $sidebar.find('.basket-link');
-
-				var $badge = $('<span/>'),
-					$badge = $badge.addClass('sidebar-badge'),
-					$badge = $badge.html(data.total_products_qty);
-
-				$basket_link.html('Basket ').append($badge);
-			}
+			var $errors_row = $form_group.find('.errors');
 
 			if (data.status == 'error') {
 				HELPER.render_flash_message(data.message || 'Error', data.status);
@@ -46,6 +47,20 @@ $(function() {
 				$form_group.addClass('has-error');
 
 				$errors_row.html($error_p);
+			} else {
+				$form_group.removeClass('has-error');
+				$errors_row.empty();
+
+				if (data.total_products_qty) {
+					var $sidebar = $('#sidebar-wrapper'),
+						$basket_link = $sidebar.find('.basket-link');
+
+					var $badge = $('<span/>'),
+						$badge = $badge.addClass('sidebar-badge'),
+						$badge = $badge.html(data.total_products_qty);
+
+					$basket_link.html('Basket ').append($badge);
+				}
 			}
 		}).fail(function(data, status, xhr) {
 			HELPER.render_flash_message(status, 'error');
