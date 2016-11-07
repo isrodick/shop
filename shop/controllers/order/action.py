@@ -116,10 +116,6 @@ def order_product_qty(product_id):
 		)
 
 	return jsonify(
-		product={
-			'id': order_product.product_id,
-			'qty': order_product.qty,
-		},
 		total_price=str(order_product.order.get_total_price()),
 		total_products_qty=order_product.order.get_total_product_qty(),
 	)
