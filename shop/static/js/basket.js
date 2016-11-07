@@ -91,5 +91,9 @@ $(function() {
 		update_total_price(data);
 
 		$product_item.addClass('hide');
+
+		if ( !$('.product-item:not(.hide)').length ) {
+			location.reload();
+		}
 	});
 });
