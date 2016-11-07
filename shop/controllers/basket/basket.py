@@ -9,10 +9,7 @@ from flask import (
 from shop import app
 from shop.database import DBSession
 from shop.models.order import Order
-from shop.models.enums import (
-	OrderStatus,
-	PaymentMethod,
-)
+from shop.models.enums import OrderStatus
 from shop.forms.order import OrderPayForm
 
 
@@ -49,6 +46,5 @@ def basket():
 		order=order,
 		sorted_links=sorted(order.links, key=lambda link: link.product.title) if order else [],
 		basket_has_products=order.has_products() if order else False,
-		payment_methods=PaymentMethod,
 		total_products_qty=Order.get_tatal_product_qty_from_session(),
 	)
