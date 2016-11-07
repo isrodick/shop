@@ -22,6 +22,16 @@ $(function() {
 				$div = $div.append(message);
 
 			$flash_message_block.append($div);
+		},
+		'update_basket_total_qty': function(qty) {
+			var $sidebar = $('#sidebar-wrapper'),
+				$basket_link = $sidebar.find('.basket-link');
+
+			var $badge = $('<span/>'),
+				$badge = $badge.addClass('sidebar-badge'),
+				$badge = $badge.html(qty);
+
+			$basket_link.html('Basket ').append($badge);
 		}
 	};
 });

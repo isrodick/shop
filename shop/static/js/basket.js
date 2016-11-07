@@ -52,14 +52,7 @@ $(function() {
 				$errors_row.empty();
 
 				if (data.total_products_qty) {
-					var $sidebar = $('#sidebar-wrapper'),
-						$basket_link = $sidebar.find('.basket-link');
-
-					var $badge = $('<span/>'),
-						$badge = $badge.addClass('sidebar-badge'),
-						$badge = $badge.html(data.total_products_qty);
-
-					$basket_link.html('Basket ').append($badge);
+					HELPER.update_basket_total_qty(data.total_products_qty);
 				}
 			}
 		}).fail(function(data, status, xhr) {
