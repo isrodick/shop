@@ -130,6 +130,7 @@ def order_product_delete(product_id):
 		)
 
 	order_product = DBSession.query(OrderProduct).get((session['order_id'], product_id))
+	order = order_product.order
 
 	if not order_product:
 		return jsonify(
@@ -146,11 +147,13 @@ def order_product_delete(product_id):
 
 		DBSession.rollback()
 
-		abort(400)	## temporarily
+		return jsonify(
+			status='error',
+			message='Error during remove product from the basket',
+		)
 
 	return jsonify(
 		status='success',
-		product_id=order_product.product_id,
-		total_price=order_product.get_total_price(),
+		total_price=str(order.get_total_price()),
 		total_products_qty=order_product.order.get_total_product_qty(),
 	)
