@@ -65,6 +65,14 @@
                     <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                             {% call render_form(form, url_for('basket'), cancel_btn=False) %}
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label" for="total-price">Total Price</label>
+                                    <div class="col-sm-10">
+                                        <span id="total-price" class="form-control">
+                                            {{ order.get_total_price() }}
+                                        </span>
+                                    </div>
+                                </div>
                                 {{ render_field(form.payment_method) }}
                             {% endcall %}
                         </div>
