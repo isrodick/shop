@@ -47,9 +47,31 @@
                                     </div>
                                 </p>
                                 <p>
-                                    <button type="button" class="btn btn-danger remove-product">
-                                        Remove
-                                    </button>
+
+
+                                    <a href="#" class="btn btn btn-danger remove-product" data-href="{{ url_for('order_product_delete', product_id=product.id) }}" data-toggle="modal" data-target="#confirm-delete-{{ product.id }}" role="button">
+                                        Delete
+                                    </a>
+
+                                    <div class="modal fade confirm-delete" id="confirm-delete-{{ product.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    Remove Confirm
+                                                </div>
+                                                <div class="modal-body">
+                                                    Are you sure you want to remove this product from the basket?
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                                    <a class="btn btn-danger btn-ok">Remove</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
                                 </p>
                             </div>
                         </div>
