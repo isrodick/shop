@@ -78,7 +78,7 @@ class Order(Base):
 		if not order:
 			return None
 
-		return (link.product_id for link in order.links)
+		return tuple(link.product_id for link in order.links)
 
 	def has_products(self):
 		return self.get_total_product_qty() > 0
