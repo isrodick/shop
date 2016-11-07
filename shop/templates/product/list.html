@@ -9,7 +9,7 @@
         <div class="panel panel-default product-item">
             <div class="panel-heading">
             {% if product.in_stock() %}
-                {% if product.id not in order_product_ids %}
+                {% if not order_product_ids or product.id not in order_product_ids %}
                     <button class="btn btn-primary add-product"
                         type="button"
                         data-url="{{ url_for('order_product_add', product_id=product.id) }}"

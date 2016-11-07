@@ -1,66 +1,30 @@
-from flask import (
-	session,
-	url_for,
-)
+from flask import session
 
 from sqlalchemy import (
 	CheckConstraint,
 	ForeignKey,
 	Column,
 	Integer,
-	Numeric,
-	Unicode,
 	Enum,
 )
 from sqlalchemy.orm import relation
 from sqlalchemy.orm.collections import attribute_mapped_collection
+from sqlalchemy.exc import SQLAlchemyError
 
-import enum
 
 from shop.database import (
 	Base,
 	DBSession,
 )
 
+from .enums import (
+	OrderStatus,
+	PaymentMethod,
+)
 
-def check_qty_positive(tablename):
-	return CheckConstraint('qty >= 0', name='{}_check_qty_positive'.format(tablename))
+from . import check_qty_positive
 
-
-class _Enum(enum.Enum):
-	@classmethod
-	def get_options(cls):
-		return [(key, cls._member_map_[key].value) for key in cls._member_map_]
-
-
-class OrderStatus(_Enum):
-	new = 'New'
-	paid = 'Paid'
-
-
-class PaymentMethod(_Enum):
-	liqpay = 'LiqPay'
-	privat24 = 'Privat24'
-	paypal = 'PayPal'
-
-
-class Product(Base):
-	__tablename__ = 'product'
-	__table_args__ = (
-		check_qty_positive(__tablename__),
-	)
-
-	id = Column(Integer, primary_key=True)
-	title = Column(Unicode(255), nullable=False, unique=True)
-	price = Column(Numeric(precision=12, scale=4), nullable=False)
-	image_url = Column(Unicode(255))
-	qty = Column(Integer, nullable=False)
-
-	def get_img_url(self):
-		return self.image_url if self.image_url else url_for('static', filename='imgs/no_image.png')
-
-	def in_stock(self):
-		return True if self.qty > 0 else False
+from .product import Product
 
 
 class Order(Base):
@@ -87,9 +51,10 @@ class Order(Base):
 		order = None
 
 		if 'order_id' in session:
-			order = DBSession.query(Order).get(session['order_id'])
-		elif create:
-			order = Order()
+			order = DBSession.query(cls).get(session['order_id'])
+
+		if not order and create:
+			order = cls()
 			order.status = OrderStatus.new
 
 			try:
@@ -100,7 +65,7 @@ class Order(Base):
 
 				DBSession.rollback()
 
-				abort(400)	## temporarily
+				# abort(400)	## temporarily
 
 			session['order_id'] = order.id
 

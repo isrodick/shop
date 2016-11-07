@@ -2,27 +2,16 @@ from flask import request
 
 from wtforms import (
 	Form,
-	SubmitField,
 	StringField,
 	DecimalField,
 	IntegerField,
-	SelectField,
 	validators,
 )
 
 from shop.database import DBSession
-from shop.models import (
-	Product,
-	PaymentMethod,
-)
+from shop.models.product import Product
 
-import itertools
-
-def submit(title):
-	def metaclass(name, parents, attributes):
-		attributes['submit'] = SubmitField(title, [validators.InputRequired()])
-		return type(name, parents, attributes)
-	return metaclass
+from . import submit
 
 
 class ProductForm(Form):
@@ -59,15 +48,3 @@ class ProductNewForm(ProductForm, metaclass=submit('Create')):
 
 class ProductEditForm(ProductForm, metaclass=submit('Save')):
 	pass
-
-
-class OrderPayForm(Form):
-	submit = SubmitField('Pay', [validators.InputRequired()])
-	payment_method = SelectField(
-		'Payment Method',
-		[
-			validators.InputRequired(),
-			validators.AnyOf(PaymentMethod._member_names_),
-		],
-		choices=list(itertools.chain([(None, '-- Please Select --')], PaymentMethod.get_options())),
-	)

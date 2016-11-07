@@ -13,4 +13,8 @@ app.config.update(dict(
 ))
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
-import shop.controllers
+from shop.controllers.admin.order import *
+from shop.controllers.admin.product import *
+from shop.controllers.basket import *
+from shop.controllers.order import *
+from shop.controllers.product import *
