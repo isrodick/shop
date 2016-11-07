@@ -1,5 +1,5 @@
 $(function() {
-	$("#confirm-delete").on('click', '.btn-ok', function(ev) {
+	$(".confirm-delete").on('click', '.btn-ok', function(ev) {
 		var $flash_message_block = $('.flash-message-block'),
 			$modal = $(this).closest('.modal'),
 			$delete_btn = $('[data-target="#' + $modal.attr('id') + '"]'),
@@ -20,6 +20,9 @@ $(function() {
 
 			if (_status == 'error') {
 				message = message || 'Error';
+				$delete_btn.trigger('delete.error', data);
+			} else {
+				$delete_btn.trigger('delete.success', data);
 			}
 
 			if (message) {
@@ -31,6 +34,8 @@ $(function() {
 			HELPER.render_flash_message(status, 'error');
 
 			$modal.modal('hide');
+
+			$delete_btn.trigger('delete.error', data);
 
 			return;
 		});
