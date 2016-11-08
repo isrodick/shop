@@ -35,7 +35,7 @@
                                                         <span class="glyphicon glyphicon-minus"></span>
                                                     </button>
                                                 </span>
-                                                <input id="product-{{ product.id }}-qty" type="text" name="qty" class="form-control" value="{{ link.qty }}" data-url="{{ url_for('basket_product_qty', product_id=product.id) }}" data-max="{{ product.qty }}">
+                                                <input id="product-{{ product.id }}-qty" type="text" name="qty" class="form-control" value="{{ link.qty }}" data-url="{{ url_for('basket_product_qty', product_id=product.id) }}" data-max="{{ product.qty }}" readonly="readonly">
                                                 <span class="input-group-btn">
                                                     <button type="button" class="btn btn-default btn-number" data-target="#product-{{ product.id }}-qty" data-type="plus" {{ 'disabled="disabled"' if link.qty >= product.qty else '' }}>
                                                         <span class="glyphicon glyphicon-plus"></span>
