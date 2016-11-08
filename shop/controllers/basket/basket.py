@@ -7,6 +7,8 @@ from flask import (
 	render_template,
 )
 
+from sqlalchemy.exc import SQLAlchemyError
+
 from shop import app
 from shop.database import DBSession
 from shop.models.order import Order
@@ -30,8 +32,21 @@ def basket():
 			form.populate_obj(order)
 			order.status = OrderStatus.paid
 
-			DBSession.add(order)
-			DBSession.commit()
+			for link in order.links:
+				link.product.qty -= link.qty
+
+			try:
+				DBSession.add(order)
+				DBSession.flush()
+				DBSession.commit()
+			except SQLAlchemyError as e:
+				print(e)
+
+				DBSession.rollback()
+
+				flash('Error during pay order')
+
+				return redirect(url_for('basket'))
 
 			session.pop('order_id', None)
 
