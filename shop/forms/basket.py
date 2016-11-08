@@ -3,6 +3,7 @@ import itertools
 from wtforms import (
 	Form,
 	SelectField,
+	IntegerField,
 	validators,
 )
 
@@ -20,3 +21,22 @@ class BasketPayForm(Form, metaclass=submit('Pay')):
 		],
 		choices=list(itertools.chain([(None, '-- Please Select --')], PaymentMethod.get_options())),
 	)
+
+
+class BasketProductQtyForm(Form):
+	qty = IntegerField('QTY', [
+		validators.InputRequired(),
+		validators.NumberRange(min=1),
+	])
+
+	def validate(self, product):
+		valid = False
+
+		if super().validate():
+			valid = True
+
+			if product.qty < self.qty.data:
+				valid = False
+				self.qty.errors.append('Only {} product(s) in stock'.format(product.qty))
+
+		return valid
