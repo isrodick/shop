@@ -1,5 +1,6 @@
 from flask import (
 	request,
+	session,
 	redirect,
 	url_for,
 	flash,
@@ -10,14 +11,14 @@ from shop import app
 from shop.database import DBSession
 from shop.models.order import Order
 from shop.models.enums import OrderStatus
-from shop.forms.order import OrderPayForm
+from shop.forms.basket import BasketPayForm
 
 
 @app.route('/basket', methods=['GET', 'POST'])
 def basket():
 	order = Order.get_from_session()
 
-	form = OrderPayForm(request.form)
+	form = BasketPayForm(request.form)
 
 	if request.method == 'POST':
 		if not order:
@@ -36,7 +37,7 @@ def basket():
 
 			flash('Order paid successfully')
 
-			return redirect(url_for('task_list'))
+			return redirect(url_for('product_list'))
 		else:
 			flash('Validation error. Please enter the correct data')
 
