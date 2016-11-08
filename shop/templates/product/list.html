@@ -12,7 +12,7 @@
                 {% if not order_product_ids or product.id not in order_product_ids %}
                     <button class="btn btn-primary add-product"
                         type="button"
-                        data-url="{{ url_for('order_product_add', product_id=product.id) }}"
+                        data-url="{{ url_for('basket_product_add', product_id=product.id) }}"
                     >
                         Add to Basket
                     </button>

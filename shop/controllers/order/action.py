@@ -16,8 +16,8 @@ from shop.models.order import (
 )
 
 
-@app.route('/order/product/<int:product_id>/add', methods=['POST'])
-def order_product_add(product_id):
+@app.route('/basket/product/<int:product_id>/add', methods=['POST'])
+def basket_product_add(product_id):
 	product = DBSession.query(Product).get(product_id)
 
 	if not product:
@@ -61,8 +61,8 @@ def order_product_add(product_id):
 	)
 
 
-@app.route('/order/product/<int:product_id>/qty', methods=['POST'])
-def order_product_qty(product_id):
+@app.route('/basket/product/<int:product_id>/qty', methods=['POST'])
+def basket_product_qty(product_id):
 	try:
 		qty = int(request.form['qty'])
 	except (ValueError, TypeError) as e:
@@ -121,8 +121,8 @@ def order_product_qty(product_id):
 	)
 
 
-@app.route('/order/product/<int:product_id>/delete', methods=['POST'])
-def order_product_delete(product_id):
+@app.route('/basket/product/<int:product_id>/delete', methods=['POST'])
+def basket_product_delete(product_id):
 	if 'order_id' not in session:
 		return jsonify(
 			status='error',
