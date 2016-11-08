@@ -14,6 +14,7 @@ from shop.models.order import (
 	Order,
 	OrderProduct,
 )
+from shop.forms.basket import BasketProductQtyForm
 
 
 @app.route('/basket/product/<int:product_id>/add', methods=['POST'])
@@ -63,22 +64,6 @@ def basket_product_add(product_id):
 
 @app.route('/basket/product/<int:product_id>/qty', methods=['POST'])
 def basket_product_qty(product_id):
-	try:
-		qty = int(request.form['qty'])
-	except (ValueError, TypeError) as e:
-		print(e)
-
-		return jsonify(
-			status='valid-error',
-			message='Please enter integer value',
-		)
-
-	if qty <= 0:
-		return jsonify(
-			status='valid-error',
-			message='Please enter positive value',
-		)
-
 	if 'order_id' not in session:
 		return jsonify(
 			status='error',
@@ -93,13 +78,15 @@ def basket_product_qty(product_id):
 			message='This product is not added to the basket',
 		)
 
-	if order_product.product.qty < qty:
+	form = BasketProductQtyForm(request.form)
+
+	if not form.validate(order_product.product):
 		return jsonify(
 			status='valid-error',
-			message='Only {} product(s) in stock'.format(order_product.product.qty),
+			message=' '.join(form.qty.errors)
 		)
 
-	order_product.qty = qty
+	order_product.qty = form.qty.data
 
 	try:
 		DBSession.add(order_product)
