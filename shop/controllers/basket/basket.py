@@ -97,4 +97,9 @@ def basket_paid_view(id):
 
 		return redirect(url_for('product_list'))
 
-	return render_template('basket/basket_paid.html', order=order)
+	return render_template(
+		'basket/basket_paid.html',
+		order=order,
+		sorted_links=sorted(order.links, key=lambda link: link.product.title),
+		basket_has_products=order.has_products(),
+	)

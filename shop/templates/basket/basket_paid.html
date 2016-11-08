@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block body %}
-    {% if order.has_products() %}
+    {% if basket_has_products %}
         <table class="table table-striped">
             <tr>
                 <th>#</th>
@@ -9,7 +9,7 @@
                 <th>QTY</th>
                 <th>Price per one item</th>
             </tr>
-        {% for link in order.links %}
+        {% for link in sorted_links %}
             <tr>
                 <td>{{ loop.index }}</td>
                 <td>{{ link.product.title }}</td>
