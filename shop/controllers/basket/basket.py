@@ -16,11 +16,27 @@ from shop.models.enums import OrderStatus
 from shop.forms.basket import BasketPayForm
 
 
+def get_error_product_qty(order):
+	if not order:
+		return set()
+
+	error_product_qty = set()
+
+	for link in order.links:
+		if link.product.qty < link.qty:
+			error_product_qty.add(link.product_id)
+
+	return error_product_qty
+
+
+
 @app.route('/basket', methods=['GET', 'POST'])
 def basket():
 	order = Order.get_from_session()
 
 	form = BasketPayForm(request.form)
+
+	error_product_qty = get_error_product_qty(order)
 
 	if request.method == 'POST':
 		if not order:
@@ -28,7 +44,7 @@ def basket():
 
 			return redirect(url_for('product_list'))
 
-		if form.validate():
+		if not error_product_qty and form.validate():
 			form.populate_obj(order)
 			order.status = OrderStatus.paid
 
@@ -60,6 +76,7 @@ def basket():
 		'basket/basket.html',
 		form=form,
 		order=order,
+		error_product_qty=error_product_qty,
 		sorted_links=sorted(order.links, key=lambda link: link.product.title) if order else [],
 		basket_has_products=order.has_products() if order else False,
 		total_products_qty=Order.get_tatal_product_qty_from_session(),
