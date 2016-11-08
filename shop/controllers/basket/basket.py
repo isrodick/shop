@@ -37,7 +37,7 @@ def basket():
 
 			flash('Order paid successfully')
 
-			return redirect(url_for('product_list'))
+			return redirect(url_for('basket_paid_view', id=order.id))
 		else:
 			flash('Validation error. Please enter the correct data')
 
@@ -49,3 +49,20 @@ def basket():
 		basket_has_products=order.has_products() if order else False,
 		total_products_qty=Order.get_tatal_product_qty_from_session(),
 	)
+
+
+@app.route('/basket/<int:id>/paid')
+def basket_paid_view(id):
+	order = DBSession.query(Order).get(id)
+
+	if not order:
+		flash('Order not found')
+
+		return redirect(url_for('product_list'))
+
+	if order.status != OrderStatus.paid:
+		flash('Order not paid yet')
+
+		return redirect(url_for('product_list'))
+
+	return render_template('basket/basket_paid.html', order=order)

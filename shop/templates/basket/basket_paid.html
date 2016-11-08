@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block body %}
+    {% if order.has_products() %}
+        <table class="table table-striped">
+            <tr>
+                <th>#</th>
+                <th>Title</th>
+                <th>QTY</th>
+                <th>Price per one item</th>
+            </tr>
+        {% for link in order.links %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ link.product.title }}</td>
+                <td>{{ link.qty }}</td>
+                <td>{{ link.product.price }}</td>
+            </tr>
+        {% endfor %}
+            <tr>
+                <td colspan="4">
+                    <p>
+                        <b>Total Price:</b> {{ order.get_total_price() }}
+                    </p>
+                    <p>
+                        <b>Selected payment method:</b> {{ order.payment_method.value }}
+                    </p>
+                </td>
+            </tr>
+        </table>
+    {% else %}
+        <div class="alert alert-info" role="alert">
+            Basket is empty
+        </div>
+    {% endif %}
+{% endblock %}
