@@ -17,7 +17,7 @@ def admin_order_delete(id):
 	order = DBSession.query(Order).get(id)
 
 	if not order:
-		flash('Order not found')
+		flash('danger;Order not found')
 
 		return redirect(url_for('admin_order_list'))
 
@@ -26,7 +26,7 @@ def admin_order_delete(id):
 		DBSession.commit()
 	except SQLAlchemyError as e:
 		print(e)
-		flash('Order could not be deleted')
+		flash('danger;Order could not be deleted')
 
 		DBSession.rollback()
 
@@ -35,6 +35,6 @@ def admin_order_delete(id):
 	if session.get('order_id') == id:
 		session.pop('order_id', None)
 
-	flash('Order was deleted successfully')
+	flash('warning;Order was deleted successfully')
 
 	return redirect(url_for('admin_order_list'))

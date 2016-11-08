@@ -33,11 +33,11 @@ def admin_product_new():
 		DBSession.add(product)
 		DBSession.commit()
 
-		flash('Product was created successfully')
+		flash('warning;Product was created successfully')
 
 		return redirect(url_for('admin_product_edit', id=product.id))
 	elif request.method == 'POST':
-		flash('Validation error. Please enter the correct data')
+		flash('danger;Validation error. Please enter the correct data')
 
 	return render_template('admin/product/new.html', form=form)
 
@@ -47,7 +47,7 @@ def admin_product_edit(id):
 	product = DBSession.query(Product).get(id)
 
 	if not product:
-		flash('Product not found')
+		flash('danger;Product not found')
 
 		return redirect(url_for('admin_product_list'))
 
@@ -59,11 +59,11 @@ def admin_product_edit(id):
 		DBSession.add(product)
 		DBSession.commit()
 
-		flash('Product was updated successfully')
+		flash('warning;Product was updated successfully')
 
 		return redirect(url_for('admin_product_list'))
 	elif request.method == 'POST':
-		flash('Validation error. Please enter the correct data')
+		flash('danger;Validation error. Please enter the correct data')
 
 	return render_template('admin/product/edit.html', form=form, product=product)
 
@@ -91,7 +91,7 @@ def admin_product_delete(id):
 			message='Product could not be deleted',
 		)
 
-	flash('Product was deleted successfully')
+	flash('warning;Product was deleted successfully')
 
 	return jsonify(
 		status='success',

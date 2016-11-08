@@ -15,7 +15,7 @@ def order_view():
 	order = DBSession.query(Order).get(id)
 
 	if not order:
-		flash('Order not found')
+		flash('danger;Order not found')
 
 		return redirect(url_for('order_list'))
 

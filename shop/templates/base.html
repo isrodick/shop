@@ -59,7 +59,12 @@
                         <div class="col-lg-12">
                             <div class="flash-message-block">
                             {% for message in get_flashed_messages() %}
-                                <div class="alert alert-danger" role="alert">
+                                {% set _class = 'info' %}
+                                {% if message.split(';')|length == 2 %}
+                                    {% set _class = message.split(';')[0] %}
+                                    {% set message = message.split(';')[1] %}
+                                {% endif %}
+                                <div class="alert alert-{{ _class }}" role="alert">
                                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>

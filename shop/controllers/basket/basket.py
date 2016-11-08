@@ -40,7 +40,7 @@ def basket():
 
 	if request.method == 'POST':
 		if not order:
-			flash('Order not found')
+			flash('danger;Order not found')
 
 			return redirect(url_for('product_list'))
 
@@ -60,17 +60,17 @@ def basket():
 
 				DBSession.rollback()
 
-				flash('Error during pay order')
+				flash('danger;Error during pay order')
 
 				return redirect(url_for('basket'))
 
 			session.pop('order_id', None)
 
-			flash('Order paid successfully')
+			flash('warning;Order paid successfully')
 
 			return redirect(url_for('basket_paid_view', id=order.id))
 		else:
-			flash('Validation error. Please enter the correct data')
+			flash('danger;Validation error. Please enter the correct data')
 
 	return render_template(
 		'basket/basket.html',
@@ -88,12 +88,12 @@ def basket_paid_view(id):
 	order = DBSession.query(Order).get(id)
 
 	if not order:
-		flash('Order not found')
+		flash('danger;Order not found')
 
 		return redirect(url_for('product_list'))
 
 	if order.status != OrderStatus.paid:
-		flash('Order not paid yet')
+		flash('danger;Order not paid yet')
 
 		return redirect(url_for('product_list'))
 
